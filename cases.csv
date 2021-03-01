@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 alpha,btwn_sub,wthn_sub,n_sub,n_rep,var_structure,n_structure
 0.05,2,5,10,10,Large_within,Balanced
 0.05,5,2,10,10,Large_between,Balanced
@@ -8,3 +9,15 @@ alpha,btwn_sub,wthn_sub,n_sub,n_rep,var_structure,n_structure
 0.05,2,5,20,5,Large_within,Large_nsub
 0.05,5,2,20,5,Large_between,Large_nsub
 0.05,3,3,20,5,Balanced,Large_nsub
+=======
+alpha,btwn_sub,wthn_sub,n_sub,n_rep,var_structure,n_structure
+0.05,2,5,10,10,Large_within,Balanced
+0.05,5,2,10,10,Large_between,Balanced
+0.05,3,3,10,10,Balanced,Balanced
+0.05,2,5,5,20,Large_within,Large_nrep
+0.05,5,2,5,20,Large_between,Large_nrep
+0.05,3,3,5,20,Balanced,Large_nrep
+0.05,2,5,20,5,Large_within,Large_nsub
+0.05,5,2,20,5,Large_between,Large_nsub
+0.05,3,3,20,5,Balanced,Large_nsub
+>>>>>>> 0e0bb2a220fece4dbf5a642f251377f6211fb51a
