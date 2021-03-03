@@ -1,5 +1,5 @@
 #Acoustic Telemetry Evaluation of Carbon Dioxide Data and Analysis
-#Aaron Cupp's Data from U.S.G.S.
+#Aaron Cupp's Data from USGS
 
 ## @knitr load_library
 
@@ -31,7 +31,8 @@ aaron$level <- factor(aaron$level)
 aaron$level <- mapvalues(aaron$level,
                          from = c("high", "medium", "low"),
                          to = c("High", "Medium", "Low"))
-aaron$trial <- factor(aaron$trial)
+aaron$trial <- ifelse(aaron$trial == "10", "6", aaron$trial) #Keep ordered
+aaron$trial <- factor(as.numeric(aaron$trial))
 aaron$period <- ifelse(aaron$period == "acclimation",
                        "Acclimation", "Treatment")
 aaron$period <- factor(aaron$period)
@@ -41,6 +42,7 @@ aaron$trtside <- factor(aaron$trtside)
 #Load data from adehabitat package for analysis and format
 aaron_new <- read.csv("aaron_data_final.csv")
 aaron_new$date <- as.Date(ymd(aaron_new$date))
+aaron_new$trial <- ifelse(aaron_new$trial == "10", "6", aaron_new$trial)
 aaron_new$trial <- as.factor(aaron_new$trial)
 aaron_new$period <- ifelse(aaron_new$period == "acclimation",
                            "Acclimation", "Treatment")
@@ -121,39 +123,103 @@ grc_long$period <- factor(grc_long$period)
 
 
 
-## @knitr exploratory_graphics
+## @knitr original_exploratory_graphics
 
-#Original data
-ggplot(aes(x = trial, y = distance, fill = level), data = aaron) + geom_boxplot()
-ggplot(aes(x = period, y = distance, fill = level), data = aaron) + geom_violin()
-ggplot(aes(x = trial, y = distance, color = period, shape = trtside), data = aaron) + geom_jitter()
-ggplot(aes(x = distance, fill = species), data = aaron) + geom_density(alpha = 0.5) #Almost identical
-ggplot(aes(x = distance, fill = period), data = aaron) + geom_density(alpha = 0.5)
-ggplot(aes(x = trial, y = distance, fill = species), data = aaron) + geom_boxplot() #Almost identical
-ggplot(aes(x = trial, y = distance, fill = period), data = aaron) + geom_boxplot() #Interesting
+ggplot(aes(x = trial, y = distance, fill = level), data = aaron) +
+  geom_boxplot()
+ggplot(aes(x = period, y = distance, fill = level), data = aaron) +
+  geom_violin()
+ggplot(aes(x = trial, y = distance, color = period, shape = trtside),
+       data = aaron) + geom_jitter()
+ggplot(aes(x = distance, fill = species), data = aaron) +
+  geom_density(alpha = 0.5) #Almost identical
+ggplot(aes(x = distance, fill = period), data = aaron) +
+  geom_density(alpha = 0.5)
+ggplot(aes(x = trial, y = distance, fill = species), data = aaron) +
+  geom_boxplot() #Almost identical
 
 
-ggplot(aes(x = distance, fill = level), data = aaron) + geom_density(alpha = 0.5) + facet_grid(trtside ~ period) + labs(fill = "Level") + xlab("Distance") + ylab("Density") + theme_bw() + theme(strip.background = element_blank()) + scale_fill_colorblind()
 
+## @knitr original_distance_species
+
+ggplot(aes(x = trial, y = distance, fill = period), data = aaron) +
+  geom_boxplot() +
+  facet_grid(~ species,
+             labeller = labeller(species = c("BHC" = "Big Head Carp",
+                                             "GRC" = "Grass Carp"))) +
+  labs(fill = "Period") +
+  xlab("Trial") +
+  ylab("Distance") +
+  theme_bw() +
+  theme(strip.background = element_blank()) +
+  scale_fill_manual(values = c("#56B4E9", "#E69F00"))
+
+
+
+## @knitr original_density
+
+aaron$level <- factor(aaron$level, levels = c("Low", "Medium", "High"))
+
+ggplot(aes(x = distance, fill = level), data = aaron) +
+  geom_density(alpha = 0.5) +
+  facet_grid(trtside ~ period) +
+  labs(fill = "Level") +
+  xlab("Distance") +
+  ylab("Density") +
+  theme_bw() +
+  theme(strip.background = element_blank()) +
+  scale_fill_colorblind()
+
+
+
+## @knitr habitat_density
 
 #adehabitat package data
-ggplot(aes(x = avg_dist, fill = level), data = aaron_new) + geom_density(alpha = 0.5) + facet_grid(trtside ~ period) + labs(fill = "Level") + xlab("Average Distance") + ylab("Density") + theme_bw() + theme(strip.background = element_blank()) + scale_fill_colorblind()
+aaron_new$level <- factor(aaron_new$level, levels = c("Low", "Medium", "High"))
 
-ggplot(aes(x = avg_dx, y = avg_dy, color = species), data = aaron_new) + geom_point() + facet_grid(trtside ~ period) + xlab("Average X Distance") + ylab("Average Y Distance") + labs(color = "Species") + theme_bw() + theme(strip.background = element_blank()) + scale_color_colorblind()
+ggplot(aes(x = avg_dist, fill = level), data = aaron_new) +
+  geom_density(alpha = 0.5) +
+  facet_grid(trtside ~ period) +
+  labs(fill = "Level") +
+  xlab("Average Distance") +
+  ylab("Density") +
+  theme_bw() +
+  theme(strip.background = element_blank()) +
+  scale_fill_colorblind()
 
 
-#By Species
-#BHC
-ggplot(aes(x = avg_dist, fill = period), data = aaron_bhc) + geom_density(alpha = 0.5)
-ggplot(aes(x = avg_dist, fill = level), data = aaron_bhc) + geom_density(alpha = 0.5)
-ggplot(aes(x = avg_dist, fill = level), data = aaron_bhc) + geom_density(alpha = 0.5) + facet_grid(trtside~period)
-ggplot(aes(x = total_cross), data = aaron_bhc) + geom_histogram(bins = 20) + facet_wrap(~period)
+
+## @knitr habitat_average
+
+#adehabitat package data
+ggplot(aes(x = avg_dx, y = avg_dy, color = species), data = aaron_new) +
+  geom_point() +
+  facet_grid(trtside ~ period) +
+  xlab("Average X Distance") +
+  ylab("Average Y Distance") +
+  labs(color = "Species") +
+  theme_bw() +
+  theme(strip.background = element_blank()) +
+  scale_color_colorblind()
 
 
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc) + geom_point() + facet_wrap(~trtside)
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc_a) + geom_point() + facet_wrap(~trtside)
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc_t) + geom_point() + facet_wrap(~trtside)
 
+## @knitr total_crossing
+
+ggplot(aes(x = total_cross, fill = species), data = aaron_new) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~ period, ) +
+  xlab("Total Crossings") +
+  ylab("Count") +
+  labs(fill = "Species") +
+  theme_bw() +
+  theme(strip.background = element_blank()) +
+  scale_fill_manual(values = c("#56B4E9", "#E69F00"),
+                    labels = c("Big Head Carp", "Grass Carp"))
+
+
+
+## @knitr bhc_exploratory
 
 aaron_bhc$level <- factor(aaron_bhc$level,
                           levels = c("Low", "Medium", "High"))
@@ -162,12 +228,88 @@ aaron_bhc_a$level <- factor(aaron_bhc_a$level,
 aaron_bhc_t$level <- factor(aaron_bhc_t$level,
                             levels = c("Low", "Medium", "High"))
 
-ggplot(aes(x = avg_dist, fill = level), data = aaron_bhc) + geom_density(alpha = 0.5) + facet_grid(trtside ~ period) + labs(fill = "Level") + xlab("Average Distance") + ylab("Density") + theme_bw() + theme(strip.background = element_blank()) + scale_fill_colorblind()
+ggplot(aes(x = avg_dist, fill = period), data = aaron_bhc) +
+  geom_density(alpha = 0.5)
+ggplot(aes(x = avg_dist, fill = level), data = aaron_bhc) +
+  geom_density(alpha = 0.5)
+ggplot(aes(x = avg_dist, fill = level), data = aaron_bhc) +
+  geom_density(alpha = 0.5) + facet_grid(trtside~period)
+ggplot(aes(x = total_cross), data = aaron_bhc) +
+  geom_histogram(bins = 20) + facet_wrap(~period)
 
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc) + geom_point() + facet_grid(trtside ~ period) + labs(color = "Level") + xlab("Hour") + ylab("Average Distance") + theme_bw() + theme(strip.background = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5)) + scale_color_colorblind()
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc) +
+  geom_point() + facet_wrap(~trtside)
+#By period
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc_a) +
+  geom_point() + facet_wrap(~trtside)
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc_t) +
+  geom_point() + facet_wrap(~trtside)
 
-ggplot(aes(x = total_cross, fill = level), data = aaron_bhc) + geom_histogram(bins = 20) + facet_grid(trtside ~ period) + labs(fill = "Level") + xlab("Total Crosses") + ylab("Count") + theme_bw() + theme(strip.background = element_blank()) + scale_fill_colorblind()
+ggplot(aes(x = avg_dist, fill = level), data = aaron_bhc) +
+  geom_density(alpha = 0.5) + facet_grid(trtside ~ period) +
+  labs(fill = "Level") + xlab("Average Distance") + ylab("Density") +
+  theme_bw() + theme(strip.background = element_blank()) +
+  scale_fill_colorblind()
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_bhc) +
+  geom_point() + facet_grid(trtside ~ period) +
+  labs(color = "Level") + xlab("Hour") + ylab("Average Distance") +
+  theme_bw() + theme(strip.background = element_blank(),
+                     axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  scale_color_colorblind()
+ggplot(aes(x = total_cross, fill = level), data = aaron_bhc) +
+  geom_histogram(bins = 20) + facet_grid(trtside ~ period) +
+  labs(fill = "Level") + xlab("Total Crosses") + ylab("Count") +
+  theme_bw() + theme(strip.background = element_blank()) +
+  scale_fill_colorblind()
 
+
+
+## @knitr grc_exploratory
+
+aaron_grc$level <- factor(aaron_grc$level,
+                          levels = c("Low", "Medium", "High"))
+aaron_grc_a$level <- factor(aaron_grc_a$level,
+                            levels = c("Low", "Medium", "High"))
+aaron_grc_t$level <- factor(aaron_grc_t$level,
+                            levels = c("Low", "Medium", "High"))
+
+ggplot(aes(x = avg_dist, fill = period), data = aaron_grc) +
+  geom_density(alpha = 0.5)
+ggplot(aes(x = avg_dist, fill = level), data = aaron_grc) +
+  geom_density(alpha = 0.5)
+ggplot(aes(x = avg_dist, fill = level), data = aaron_grc) +
+  geom_density(alpha = 0.5) + facet_grid(trtside~period)
+ggplot(aes(x = total_cross), data = aaron_grc) +
+  geom_histogram(bins = 20) + facet_wrap(trtside~period)
+
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc) +
+  geom_point() + facet_wrap(~trtside)
+#By period
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc_a) +
+  geom_point() + facet_wrap(~trtside)
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc_t) +
+  geom_point() + facet_wrap(~trtside) #MUCH more movement during treatment
+
+ggplot(aes(x = avg_dist, fill = level), data = aaron_grc) +
+  geom_density(alpha = 0.5) + facet_grid(trtside ~ period) +
+  labs(fill = "Level") + xlab("Average Distance") + ylab("Density") +
+  theme_bw() + theme(strip.background = element_blank()) +
+  scale_fill_colorblind()
+ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc) +
+  geom_point() + facet_grid(trtside ~ period) + labs(color = "Level") +
+  xlab("Hour") + ylab("Average Distance") + theme_bw() +
+  theme(strip.background = element_blank(),
+        axis.text.x = element_text(angle = 90, vjust = 0.5)) +
+  scale_color_colorblind()
+ggplot(aes(x = total_cross, fill = level), data = aaron_grc) +
+  geom_histogram(bins = 20) + facet_grid(trtside ~ period) +
+  labs(fill = "Level") + xlab("Total Crosses") + ylab("Count") +
+  theme_bw() + theme(strip.background = element_blank()) +
+  scale_fill_colorblind()
+
+
+
+## @knitr bhc_avg_table
 
 aaron_bhc$level <- factor(aaron_bhc$level, levels = c("Low", "Medium", "High"))
 bhc_table <- aaron_bhc %>%
@@ -176,36 +318,14 @@ bhc_table <- aaron_bhc %>%
 names(bhc_table) <- c("Period", "Treatment Side", "Level", "Average Distance")
 bhc_table[, 4] <- round(bhc_table[, 4], 4)
 bhc_table <- formattable(bhc_table,
-                      align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
-                      list(`Indicator Name` = formatter("span",
-                      style = ~ style(color = "grey", font.weight = "bold"))))
+               align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
+               list(`Indicator Name` = formatter("span",
+               style = ~ style(color = "grey", font.weight = "bold"))))
 bhc_table
 
 
-#GRC
-ggplot(aes(x = avg_dist, fill = period), data = aaron_grc) + geom_density(alpha = 0.5)
-ggplot(aes(x = avg_dist, fill = level), data = aaron_grc) + geom_density(alpha = 0.5)
-ggplot(aes(x = avg_dist, fill = level), data = aaron_grc) + geom_density(alpha = 0.5) + facet_grid(trtside~period)
-ggplot(aes(x = total_cross), data = aaron_grc) + geom_histogram(bins = 20) + facet_wrap(trtside~period)
 
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc) + geom_point() + facet_wrap(~trtside)
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc_a) + geom_point() + facet_wrap(~trtside)
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc_t) + geom_point() + facet_wrap(~trtside) #MUCH more movement during treatment
-
-
-aaron_grc$level <- factor(aaron_grc$level, levels = c("Low", "Medium", "High"))
-aaron_grc_a$level <- factor(aaron_grc_a$level, levels = c("Low", "Medium", "High"))
-aaron_grc_t$level <- factor(aaron_grc_t$level, levels = c("Low", "Medium", "High"))
-
-ggplot(aes(x = avg_dist, fill = level), data = aaron_grc) + geom_density(alpha = 0.5) + facet_grid(trtside ~ period) + labs(fill = "Level") + xlab("Average Distance") + ylab("Density") + theme_bw() + theme(strip.background = element_blank()) + scale_fill_colorblind()
-
-ggplot(aes(x = hour, y = avg_dist, color = level), data = aaron_grc) + geom_point() + facet_grid(trtside ~ period) + labs(color = "Level") + xlab("Hour") + ylab("Average Distance") + theme_bw() + theme(strip.background = element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5)) + scale_color_colorblind()
-
-ggplot(aes(x = total_cross, fill = level), data = aaron_grc) + geom_histogram(bins = 20) + facet_grid(trtside ~ period) + labs(fill = "Level") + xlab("Total Crosses") + ylab("Count") + theme_bw() + theme(strip.background = element_blank()) + scale_fill_colorblind()
-
-
-
-## @knitr final_graphics
+## @knitr grc_avg_table
 
 aaron_grc$level <- factor(aaron_grc$level, levels = c("Low", "Medium", "High"))
 grc_table <- aaron_grc %>%
@@ -214,9 +334,9 @@ grc_table <- aaron_grc %>%
 names(grc_table) <- c("Period", "Treatment Side", "Level", "Average Distance")
 grc_table[, 4] <- round(grc_table[, 4], 4)
 grc_table <- formattable(grc_table,
-            align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
-            list(`Indicator Name` = formatter("span",
-            style = ~ style(color = "grey", font.weight = "bold"))))
+              align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
+              list(`Indicator Name` = formatter("span",
+              style = ~ style(color = "grey", font.weight = "bold"))))
 grc_table
 
 
