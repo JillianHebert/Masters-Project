@@ -8,3 +8,20 @@ To further dive into model differences, two simulated data sets were used. These
 
 The two empirical data sets used for this project both come from U.S. Geological Survey. Due to privacy restrictions, the data sets used could not be posted in this repository. The data file that has been included was used to change the inputs for the simulated data to determine how models change under conditions like sample size, within subject size, and between subject size. 
 
+
+# Repository Content
+
+- `README.md`: This file with explination of project.
+- `Aaron_Code.R`: An R scrpit with the analysis for the empirical data set "Acoustic telemetry evaluation of carbon dioxide as a behavioral deterrent for invasive fishes."
+- `James_Code.R`: An R scrpit with the analysis for the empirical data set "Exposure-related effects of Zequanox on juvenile lake sturgeon (Acipenser fulvescens) and lake trout (Salvelinus namaycush)."
+- `Simulated_Code.R`: An R script with the simulated data and analysis.
+- `cases.csv`: The csv file that was used to change criteria in the simulated data structure.
+
+
+# References
+
+Cupp, Aaron, Ashley Lopez, Justin Smerud, Jose Rivera, Nicholas Swyers, David Smith, and Mark Gaikowski, 2020. Acoustic telemetry evaluation of carbon dioxide as a behavioral deterrent for invasive fishes: Data: U.S. Geological Survey data release, https://doi.org/10.5066/P9QBSCIE.
+
+Luoma, James, Todd Severson, Jeremy Wise, and Matthew Barbour, 2018. Exposure-related effects of Zequanox on juvenile lake sturgeon (Acipenser fulvescens) and lake trout (Salvelinus namaycush). Management of Biological Invasions. 9(2):163-175. DOI: 10.3391/mbi.2018.9.2.09. 
+
+R Core Team (2019). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
