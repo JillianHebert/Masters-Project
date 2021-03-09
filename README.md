@@ -1,4 +1,4 @@
-# Masters Project
+# Master's Project
 
 For my master’s project at University of Wisconsin - La Crosse, I investigated the impacts of variable specification, declaring variables as fixed or random,  and model selection  on estimations and significance levels. These choices can have drastic effects on model performance as well as drawn conclusions. This is a vital part of the modeling process and incorrect choices can lead to results that are not truly supported by the data. Many researchers have found their papers returned from peer reviewers due to their variable specification or model selection. In many fields, predominantly the sciences, experiments have a nested design structure, that includes both fixed and random variables. This project aims to investigate the differences in results when variable specification and model selection differ. 
 
