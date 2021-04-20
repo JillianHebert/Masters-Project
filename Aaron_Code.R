@@ -208,7 +208,7 @@ ggplot(aes(x = avg_dx, y = avg_dy, color = species), data = aaron_new) +
 ## @knitr total_crossing
 
 ggplot(aes(x = total_cross, fill = period), data = aaron_new) +
-  geom_histogram(bins = 15, alpha = 0.6) +
+  geom_histogram(bins = 5, position = "dodge") +
   facet_wrap(~ species,
              labeller = labeller(species = c("BHC" = "Big Head Carp",
                                              "GRC" = "Grass Carp"))) +
@@ -399,7 +399,11 @@ bhc_fixed_table <- data.frame(bhc_fixed_table)
 bhc_fixed_table <- round(bhc_fixed_table, 4)
 colnames(bhc_fixed_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                                "Upper 95% CI", "t-Value", "p-Value")
-formattable(bhc_fixed_table,
+bhc_fixed_table2 <- bhc_fixed_table
+bhc_fixed_table2$`p-Value` <- as.character(bhc_fixed_table2$`p-Value`)
+bhc_fixed_table2[c(1:3), 6] <- "<0.0001"
+bhc_fixed_table2[6, 6] <- "0.0001"
+formattable(bhc_fixed_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -420,7 +424,11 @@ grc_fixed_table <- data.frame(grc_fixed_table)
 grc_fixed_table <- round(grc_fixed_table, 4)
 colnames(grc_fixed_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                                "Upper 95% CI", "t-Value", "p-Value")
-formattable(grc_fixed_table,
+grc_fixed_table2 <- grc_fixed_table
+grc_fixed_table2$`p-Value` <- as.character(grc_fixed_table2$`p-Value`)
+grc_fixed_table2[c(1:3), 6] <- "<0.0001"
+grc_fixed_table2[5, 6] <- "0.0002"
+formattable(grc_fixed_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -440,7 +448,11 @@ bhc_unrest_table <- data.frame(bhc_unrest_table)
 bhc_unrest_table <- round(bhc_unrest_table, 4)
 colnames(bhc_unrest_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                           "Upper 95% CI", "t-Value", "p-Value")
-formattable(bhc_unrest_table,
+bhc_unrest_table2 <- bhc_unrest_table
+bhc_unrest_table2$`p-Value` <- as.character(bhc_unrest_table2$`p-Value`)
+bhc_unrest_table2[1, 6] <- "<0.0001"
+bhc_unrest_table2[7, 6] <- "0.0002"
+formattable(bhc_unrest_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -461,7 +473,11 @@ grc_unrest_table <- data.frame(grc_unrest_table)
 grc_unrest_table <- round(grc_unrest_table, 4)
 colnames(grc_unrest_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                                 "Upper 95% CI", "t-Value", "p-Value")
-formattable(grc_unrest_table,
+grc_unrest_table2 <- grc_unrest_table
+grc_unrest_table2$`p-Value` <- as.character(grc_unrest_table2$`p-Value`)
+grc_unrest_table2[1, 6] <- "<0.0001"
+grc_unrest_table2[6, 6] <- "0.0005"
+formattable(grc_unrest_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -547,6 +563,8 @@ bhc_anova <- data.frame(rbind(bhc_pooled_df, bhc_fixed_df,
 bhc_anova <- round(bhc_anova, 4)
 names(bhc_anova) <- c("Numerator DF", "Denominator DF",
                         "F-Value", "p-Value")
+bhc_anova$`p-Value` <- as.character(bhc_anova$`p-Value`)
+bhc_anova[-1, 4] <- "<0.0001"
 formattable(bhc_anova,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
@@ -592,6 +610,8 @@ grc_anova <- data.frame(rbind(grc_pooled_df, grc_fixed_df,
 grc_anova <- round(grc_anova, 4)
 names(grc_anova) <- c("Numerator DF", "Denominator DF",
                       "F-Value", "p-Value")
+grc_anova$`p-Value` <- as.character(grc_anova$`p-Value`)
+grc_anova[-1, 4] <- "<0.0001"
 formattable(grc_anova,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",

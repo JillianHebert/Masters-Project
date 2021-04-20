@@ -181,9 +181,9 @@ for(i in 1:n_cases) {
 }
 
 #Format output
-equal_sim_results <- cbind(cases[, 1:5], results[, -1])
+equal_sim_results <- cbind(seq(1:9), cases[, 1:5], results[, -1])
 equal_sim_results <- as.data.frame(equal_sim_results)
-names(equal_sim_results) <- c("Alpha", "Between Subject SD",
+names(equal_sim_results) <- c("Case", "Alpha", "Between Subject SD",
                               "Within Subject SD", "Number of Subjects",
                               "Number of Repetitions", "Pooled Power",
                               "Fixed Power", "ML Power", "REML Power",
@@ -193,10 +193,10 @@ names(equal_sim_results) <- c("Alpha", "Between Subject SD",
                               "REML Upper CI")
 
 #Create power table
-equal_power <- equal_sim_results[, 1:9]
+equal_power <- equal_sim_results[, 1:10]
 equal_power <- round(equal_power, 4)
 formattable(equal_power,
-            align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
+            align = c("l", "c", "c", "c", "c", "c", "c", "c", "c", "c"),
             list(`Indicator Name` = formatter(
               "span", style = ~ style(color = "grey", font.weight = "bold"))))
 
@@ -255,13 +255,13 @@ for(i in 1:9) {
 
   case <- as.data.frame(rbind(pooled_data[, i], fixed_data[, i],
                               ml_data[, i], reml_data[, i]))
-  names(case) <- c("Term", "Estimate", "Lower CI", "Upper CI")
+  names(case) <- c("Model", "Estimate", "Lower CI", "Upper CI")
   case$Estimate <- as.numeric(case$Estimate)
   case$`Lower CI` <- as.numeric(case$`Lower CI`)
   case$`Upper CI` <- as.numeric(case$`Upper CI`)
-  case$Term <- ordered(case$Term, levels = c("REML", "ML", "Fixed", "Pooled"))
+  case$Model <- ordered(case$Model, levels = c("REML", "ML", "Fixed", "Pooled"))
 
-  graph <- ggplot(aes(x = Term, y = Estimate), data = case) +
+  graph <- ggplot(aes(x = Model, y = Estimate), data = case) +
     geom_point() +
     scale_y_continuous(breaks = seq(-8, 8, by = 2), limits = c(-8, 8)) +
     labs(title = paste("Case ", i)) +
@@ -302,9 +302,9 @@ for(i in 1:n_cases) {
 }
 
 #Format output
-unequal_sim_results <- cbind(cases[, 1:5], results2[, -1])
+unequal_sim_results <- cbind(seq(1:9), cases[, 1:5], results2[, -1])
 unequal_sim_results <- as.data.frame(unequal_sim_results)
-names(unequal_sim_results) <- c("Alpha", "Between Subject SD",
+names(unequal_sim_results) <- c("Case", "Alpha", "Between Subject SD",
                                 "Within Subject SD", "Number of Subjects",
                                 "Number of Repetitions", "Pooled Power",
                                 "Fixed Power", "ML Power", "REML Power",
@@ -314,10 +314,10 @@ names(unequal_sim_results) <- c("Alpha", "Between Subject SD",
                                 "REML Upper CI")
 
 #Create power table
-unequal_power <- unequal_sim_results[, 1:9]
+unequal_power <- unequal_sim_results[, 1:10]
 unequal_power <- round(unequal_power, 4)
 formattable(unequal_power,
-            align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
+            align = c("l", "c", "c", "c", "c", "c", "c", "c", "c", "c"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
 
@@ -375,14 +375,14 @@ for(i in 1:9) {
 
   case <- as.data.frame(rbind(pooled_data2[, i], fixed_data2[, i],
                               ml_data2[, i], reml_data2[, i]))
-  names(case) <- c("Term", "Estimate", "Lower CI", "Upper CI")
+  names(case) <- c("Model", "Estimate", "Lower CI", "Upper CI")
   case$Estimate <- as.numeric(case$Estimate)
   case$`Lower CI` <- as.numeric(case$`Lower CI`)
   case$`Upper CI` <- as.numeric(case$`Upper CI`)
-  case$Term <- ordered(case$Term, levels = c("REML", "ML", "Fixed", "Pooled"))
+  case$Model <- ordered(case$Model, levels = c("REML", "ML", "Fixed", "Pooled"))
 
 #Change center to difference (10, 10 * (0.5 + gam_sd))
-  graph <- ggplot(aes(x = Term, y = Estimate), data = case) +
+  graph <- ggplot(aes(x = Model, y = Estimate), data = case) +
     geom_point() +
     scale_y_continuous(breaks = seq(-4, 10, by = 2), limits = c(-4, 10)) +
     labs(title = paste("Case ", i)) +
@@ -492,3 +492,33 @@ formattable(avg_table,
             align = c("l", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
+
+
+
+## @knitr width_percent
+
+data <- cbind(seq(1:9), ml_width$width, reml_width$width,
+              ml_width2$width, reml_width2$width)
+data <- data.frame(data)
+names(data) <- c("Case", "No Effect ML Width", "No Effect REML Width",
+                 "Effect ML Width", "Effect REML Width")
+data$No_Effect_Difference <- data$`No Effect REML Width` -
+  data$`No Effect ML Width`
+data$Effect_Difference <- data$`Effect REML Width` -
+  data$`Effect ML Width`
+no_effect_avg_constant <- (avg_table[3, 2] + avg_table[4, 2]) / 2
+data$No_Effect_Percent <- data$No_Effect_Difference /
+  no_effect_avg_constant * 100
+effect_avg_constant <- (avg_table[3, 3] + avg_table[4, 3]) / 2
+data$Effect_Percent <- data$Effect_Difference /
+  effect_avg_constant * 100
+data[, -1] <- round(data[, -1], 4)
+names(data) <- c("Case", "No Effect ML Width", "No Effect REML Width",
+                 "Effect ML Width", "Effect REML Width",
+                 "No Effect Difference", "Effect Difference",
+                 "No Effect Percent", "Effect Percent")
+formattable(data[, c(1:5, 8:9)],
+            align = c("l", "c", "c", "c", "c", "c", "c", "c", "c", "c", "r"),
+            list(`Indicator Name` = formatter("span",
+            style = ~ style(color = "grey", font.weight = "bold"))))
+

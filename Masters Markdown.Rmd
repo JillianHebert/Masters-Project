@@ -1,0 +1,246 @@
+---
+title: "Masters Markdown"
+author: "Jilly Hebert"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Simulated Data
+
+Two simulated datasets were built to emulate nested designs. They were both built from a gamma distribution and incorporated a skewness of 0.5. Comparisons were made between estimated model powers, estimations, and confidence intervals. Nine unique cases were assessed to compare differences when data structures differ.
+
+```{r, echo = FALSE}
+knitr::read_chunk('./Simulated_Code.R')
+```
+
+```{r load_library, echo = FALSE, warning = FALSE, message = FALSE}
+```
+
+```{r simulation, echo = FALSE}
+```
+
+
+## No Treatment Effect
+
+This simulated dataset had no treatment effect, so powers should be close to 0.05. The table below shows that the fixed model has a significantly higher power than the other three models, and an unexpectedly high power for a dataset with no treatment effect.
+
+```{r no_effect_power, echo = FALSE}
+```
+
+When comparing the 95% confidence intervals, the fixed model had the tightest intervals and failed to capture uncertainty.
+
+```{r no_effect_graphics, echo = FALSE}
+```
+
+
+## Treatment Effect
+
+This simulated dataset had a treatment effect of 3, or half of the standard deviation of the gamma distribution. Higher powers indicate better fits.
+
+```{r effect_power, echo = FALSE}
+```
+
+When comparing the 95% confidence intervals, the fixed model had the tightest intervals and failed to capture uncertainty.
+
+```{r effect_graphics, echo = FALSE, warning = FALSE, message = FALSE}
+```
+
+
+## Confidence Interval Comparisons
+
+When making comparisons between intervals, it was found that the pooled and restricted maximum likelihood models had identical results. It was also found that regardless of treatment effects, the intervals were around the same average width.
+
+```{r interval_width, echo = FALSE}
+```
+
+```{r avg_widths, echo = FALSE}
+```
+
+```{r width_percent, echo = FALSE}
+```
+
+
+
+# Exposure Related Effects of Zequanox
+
+This empirical dataset was obtained from U.S. Geological Survey. This study evaluated the impacts of the chemical Zequanox, which is used to control invasive mussels, on the native fish species lake trout and lake sturgeon. 
+
+```{r, echo = FALSE}
+knitr::read_chunk('./James_Code.R')
+```
+
+```{r load_library, echo = FALSE, warning = FALSE, message = FALSE}
+```
+
+```{r load_data, echo = FALSE}
+```
+
+## Exploratory Graphics
+
+Graphics show that on average, lake trout had a higher condition factor, and the treatment levels had more variation in comparison to lake sturgeon.
+
+```{r james_density, echo = FALSE}
+```
+
+```{r summary_stats, echo = FALSE}
+```
+
+## Pooled Model
+
+The pooled model fit a linear model with treatment level and species as fixed predictors. The pooled condition factor was used as the response.
+
+```{r james_pooled, echo = FALSE}
+```
+
+## Fixed Model
+
+The fixed model fit a linear model with treatment level, species, and tank as fixed predictors. It used the original condition factor as the response.
+
+```{r james_fixed, echo = FALSE}
+```
+
+## Maximum Likelihood Model
+
+The maximum likelihood model fit a linear mixed effects model with treatment level and species as fixed predictors. Unique fish nested in tank was used as the random predictor and the original condition factor was the response. The maximum likelihood algorithm was specified in the model.
+
+```{r james_ml, echo = FALSE}
+```
+
+## Restricted Maximum Likelihood Model
+
+The restricted maximum likelihood model fit a linear mixed effects model with treatment level and species as fixed predictors. Unique fish nested in tank was used as the random predictor and the original condition factor was the response. The restricted maximum likelihood algorithm was specified in the model.
+
+```{r james_reml, echo = FALSE}
+```
+
+## Model Comparisons
+
+When making comparisons, it was found that the fixed model had a significantly higher denominator degrees of freedom. This leads to a higher power and a more frequent determination of significance.
+
+```{r anova_comparison, echo = FALSE}
+```
+
+
+
+# Acoustic Telemetry Evaluation of Carbon Dioxide
+
+This empirical dataset was obtained from U.S. Geological Survey. It assessed the movements of Bighead Carp and Grass Carp in a pond in response to carbon dioxide. This dataset included repeated measures which is an extra layer of complication that did not exist in the previous datasets.
+
+```{r, echo = FALSE}
+knitr::read_chunk('./Aaron_Code.R')
+```
+
+```{r load_library, echo = FALSE, warning = FALSE, message = FALSE}
+```
+
+```{r load_data, echo = FALSE}
+```
+
+## Exploratory Graphics 
+
+The original distance metric was centered about a reference point at the center of the pond. It can be seen that fish are moving away from the side that is releasing carbon dioxide.
+
+#### Original Distance 
+```{r original_distance_species, echo = FALSE}
+```
+
+```{r original_density, echo = FALSE}
+```
+
+#### Absolute Distance
+
+The absolute distance was a created using the `adehabitatLT` package. This helped create a standardized distance metric and was used as the response variable.
+
+```{r habitat_distance, echo = FALSE}
+```
+
+```{r habitat_average, echo = FALSE}
+```
+
+The total number of crossings during periods were also assessed. This shows that during the treatment period, the carp are moving about the pond much less since there are less frequent crossings.
+
+```{r total_crossing, echo = FALSE}
+```
+
+
+## Bighead Carp
+
+The species were split and handled separately to maintain a nested design structure.
+
+#### Pooled Model
+
+The pooled model fit a linear model with period, level, and treatment side as fixed predictors. A pooled absolute distance was used as the response variable. 
+
+```{r bhc_pooled, echo = FALSE}
+```
+
+#### Fixed Model
+
+The fixed model fit a linear model with period, level, the interaction between period and level, and trial nested in level as fixed predictor variables. The original absolute distance metric was used as the response variable.
+
+```{r bhc_fixed, echo = FALSE}
+```
+
+#### Maximum Likelihood Model
+
+The maximum likelihood model fit a linear mixed effects model with period, level, treatment side, and the interaction between period and level as fixed predictors. Unique fish nested in trial was specified as random predictors and the original absolute distance metric was used as the response variable. The maximum likelihood method was specified in the model.
+
+```{r bhc_ml, echo = FALSE}
+```
+
+#### Restricted Maximum Likelihood Model
+
+The restricted maximum likelihood model fit a linear mixed effects model with period, level, treatment side, and the interaction between period and level as fixed predictors. Unique fish nested in trial was specified as random predictors and the original absolute distance metric was used as the response variable. The restricted maximum likelihood method was specified in the model.
+
+```{r bhc_reml, echo = FALSE}
+```
+
+#### Model Comparisons
+
+When making comparisons, it was found that the fixed model had a significantly higher denominator degrees of freedom. This leads to a higher power and a more frequent determination of significance. It's also important to note that the pooled denominator degrees of freedom differ from the maximum likelihood and restricted maximum likelihood models. This is due to the repeated measure that exist in the dataset.
+
+```{r bhc_anova, echo = FALSE}
+```
+
+
+## Grass Carp
+
+#### Pooled Model
+
+The pooled model fit a linear model with period, level, and treatment side as fixed predictors. A pooled absolute distance was used as the response variable. 
+
+```{r grc_pooled, echo = FALSE}
+```
+
+#### Fixed Model
+
+The fixed model fit a linear model with period, level, the interaction between period and level, and trial nested in level as fixed predictor variables. The original absolute distance metric was used as the response variable.
+
+```{r grc_fixed, echo = FALSE}
+```
+
+#### Maximum Likelihood Model
+
+The maximum likelihood model fit a linear mixed effects model with period, level, treatment side, and the interaction between period and level as fixed predictors. Unique fish nested in trial was specified as random predictors and the original absolute distance metric was used as the response variable. The maximum likelihood method was specified in the model.
+
+```{r grc_ml, echo = FALSE}
+```
+
+#### Restricted Maximum Likelihood Model
+
+The restricted maximum likelihood model fit a linear mixed effects model with period, level, treatment side, and the interaction between period and level as fixed predictors. Unique fish nested in trial was specified as random predictors and the original absolute distance metric was used as the response variable. The restricted maximum likelihood method was specified in the model.
+
+```{r grc_reml, echo = FALSE}
+```
+
+#### Model Comparisons
+
+When making comparisons, it was found that the fixed model had a significantly higher denominator degrees of freedom. This leads to a higher power and a more frequent determination of significance. It's also important to note that the pooled denominator degrees of freedom differ from the maximum likelihood and restricted maximum likelihood models. This is due to the repeated measure that exist in the dataset.
+
+```{r grc_anova, echo = FALSE}
+```
+

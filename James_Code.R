@@ -138,7 +138,10 @@ pool_table <- data.frame(pool_table)
 pool_table <- round(pool_table, 4)
 colnames(pool_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                           "Upper 95% CI", "t-Value", "p-Value")
-formattable(pool_table,
+pool_table2 <- pool_table
+pool_table2$`p-Value` <- as.character(pool_table2$`p-Value`)
+pool_table2[c(1, 4), 6] <- "<0.0001"
+formattable(pool_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -152,12 +155,15 @@ james_fixed <- lm(Condition.Factor ~ Treatment + Species + UniqueTank,
 #plot(james_fixed)
 fixed_sum <- summary(james_fixed)$coefficients
 fixed_ci <- confint(james_fixed)
-fixed_table <- cbind(fixed_sum[1:5, 1:2], fixed_ci[1:5, ], fixed_sum[1:5, 3:4])
+fixed_table <- cbind(fixed_sum[1:4, 1:2], fixed_ci[1:4, ], fixed_sum[1:4, 3:4])
 fixed_table <- data.frame(fixed_table)
 fixed_table <- round(fixed_table, 4)
 colnames(fixed_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                           "Upper 95% CI", "t-Value", "p-Value")
-formattable(fixed_table,
+fixed_table2 <- fixed_table
+fixed_table2$`p-Value` <- as.character(fixed_table2$`p-Value`)
+fixed_table2[c(1, 4), 6] <- "<0.0001"
+formattable(fixed_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -176,7 +182,11 @@ unrest_table <- data.frame(unrest_table)
 unrest_table <- round(unrest_table, 4)
 colnames(unrest_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                            "Upper 95% CI", "t-Value", "p-Value")
-formattable(unrest_table,
+unrest_table2 <- unrest_table
+unrest_table2$`p-Value` <- as.character(unrest_table2$`p-Value`)
+unrest_table2[c(1, 4), 6] <- "<0.0001"
+unrest_table2[2, 6] <- "0.0440"
+formattable(unrest_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -195,7 +205,10 @@ rest_table <- data.frame(rest_table)
 rest_table <- round(rest_table, 4)
 colnames(rest_table) <- c("Estimate", "Std. Error", "Lower 95% CI",
                             "Upper 95% CI", "t-Value", "p-Value")
-formattable(rest_table,
+rest_table2 <- rest_table
+rest_table2$`p-Value` <- as.character(rest_table2$`p-Value`)
+rest_table2[c(1, 4), 6] <- "<0.0001"
+formattable(rest_table2,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
             style = ~ style(color = "grey", font.weight = "bold"))))
@@ -237,6 +250,8 @@ james_anova <- data.frame(rbind(pooled_df, fixed_df, unrest_df, rest_df))
 james_anova <- round(james_anova, 4)
 names(james_anova) <- c("Numerator DF", "Denominator DF",
                                "F-Value", "p-Value")
+james_anova$`p-Value` <- as.character(james_anova$`p-Value`)
+james_anova[2, 4] <- "<0.0001"
 formattable(james_anova,
             align = c("l", "c", "c", "c", "c", "c", "c", "c", "r"),
             list(`Indicator Name` = formatter("span",
